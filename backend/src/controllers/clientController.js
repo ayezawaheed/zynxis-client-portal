@@ -10,7 +10,6 @@ const getClients = async (req, res) => {
       count: clients.length,
       clients,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -52,7 +51,6 @@ const createClient = async (req, res) => {
       message: "Client created successfully",
       client,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -61,7 +59,7 @@ const createClient = async (req, res) => {
   }
 };
 
-// GET single client
+// GET client by ID
 const getClientById = async (req, res) => {
   try {
     const client = await Client.findById(req.params.id);
@@ -77,7 +75,6 @@ const getClientById = async (req, res) => {
       success: true,
       client,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -85,8 +82,67 @@ const getClientById = async (req, res) => {
     });
   }
 };
+
+// UPDATE client
+const updateClient = async (req, res) => {
+  try {
+    const client = await Client.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!client) {
+      return res.status(404).json({
+        success: false,
+        message: "Client not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Client updated successfully",
+      client,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// DELETE client
+const deleteClient = async (req, res) => {
+  try {
+    const client = await Client.findByIdAndDelete(req.params.id);
+
+    if (!client) {
+      return res.status(404).json({
+        success: false,
+        message: "Client not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Client deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getClients,
   createClient,
   getClientById,
+  updateClient,
+  deleteClient,
 };
