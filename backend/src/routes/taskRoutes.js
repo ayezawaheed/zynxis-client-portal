@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const protect = require("../middleware/authMiddleware");
+const adminOnly = require("../middleware/adminMiddleware");
 
 const {
   createTask,
@@ -11,14 +12,13 @@ const {
   deleteTask,
 } = require("../controllers/taskController");
 
-router.post("/", protect, createTask);
-
+// Everyone logged in
 router.get("/", protect, getTasks);
-
 router.get("/:id", protect, getTaskById);
 
-router.put("/:id", protect, updateTask);
-
-router.delete("/:id", protect, deleteTask);
+// Admin only
+router.post("/", protect, adminOnly, createTask);
+router.put("/:id", protect, adminOnly, updateTask);
+router.delete("/:id", protect, adminOnly, deleteTask);
 
 module.exports = router;
