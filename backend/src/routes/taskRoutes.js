@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/uploadMiddleware");
 
 const protect = require("../middleware/authMiddleware");
 const adminOnly = require("../middleware/adminMiddleware");
@@ -10,6 +11,7 @@ const {
   getTaskById,
   updateTask,
   deleteTask,
+  uploadAttachment,
 } = require("../controllers/taskController");
 
 // Everyone logged in
@@ -20,5 +22,12 @@ router.get("/:id", protect, getTaskById);
 router.post("/", protect, adminOnly, createTask);
 router.put("/:id", protect, adminOnly, updateTask);
 router.delete("/:id", protect, adminOnly, deleteTask);
+
+router.post(
+  "/:id/upload",
+  protect,
+  upload.single("attachment"),
+  uploadAttachment
+);
 
 module.exports = router;

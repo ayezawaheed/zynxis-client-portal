@@ -1,4 +1,5 @@
 const Task = require("../models/Task");
+const Notification = require("../models/Notification");
 
 // CREATE Task
 const createTask = async (req, res) => {
@@ -29,6 +30,11 @@ const createTask = async (req, res) => {
       status,
       dueDate,
     });
+
+    await Notification.create({
+  message: `New task "${task.title}" has been created.`,
+  type: "task",
+});
 
     res.status(201).json({
       success: true,
@@ -153,6 +159,42 @@ const deleteTask = async (req, res) => {
   }
 };
 
+// Upload attachment
+const uploadAttachment = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload a file",
+      });
+    }
+
+    task.attachment = req.file.filename;
+    await task.save();
+
+    res.status(200).json({
+      success: true,
+      message: "File uploaded successfully",
+      task,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 module.exports = {
   createTask,
@@ -160,4 +202,5 @@ module.exports = {
   getTaskById,
   updateTask,
   deleteTask,
+  uploadAttachment,
 };
