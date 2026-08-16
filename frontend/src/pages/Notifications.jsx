@@ -1,34 +1,65 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
 function Notifications() {
-  const [notifications, setNotifications] = useState([]);
+  const fetchNotifications = async () => {
+    const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/notifications`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setNotifications(response.data.notifications);
-      } catch (error) {
-        console.error(
-          "Notifications fetch failed:",
-          error.response?.data || error.message
-        );
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_URL}/api/notifications`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    };
+    );
 
-    fetchNotifications();
-  }, []);
+    return response.data.notifications;
+  };
+
+ const {
+  data: notifications = [],
+  isLoading,
+  isError,
+  error,
+} = useQuery({
+  queryKey: ["notifications"],
+  queryFn: fetchNotifications,
+  refetchInterval: 5000,
+});
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-100 p-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-800">
+            Notifications
+          </h1>
+
+          <p className="text-slate-500 mt-2">
+            Loading notifications...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-slate-100 p-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-800">
+            Notifications
+          </h1>
+
+          <p className="text-red-600 mt-4">
+            Failed to load notifications:{" "}
+            {error?.response?.data?.message || error.message}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-100 p-8">
