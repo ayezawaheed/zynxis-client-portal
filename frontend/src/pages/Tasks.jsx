@@ -1,10 +1,13 @@
 import { useState } from "react";
+
 import axios from "axios";
+
 import {
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+
 import DataTable from "../components/DataTable";
 
 function Tasks() {
@@ -116,30 +119,33 @@ function Tasks() {
       key: "title",
       label: "Task",
     },
+
     {
       key: "project",
       label: "Project",
       render: (task) =>
         task.project?.projectName || "N/A",
     },
+
     {
       key: "priority",
       label: "Priority",
     },
+
     {
       key: "status",
       label: "Status",
     },
+
     {
       key: "dueDate",
       label: "Due Date",
       render: (task) =>
         task.dueDate
-          ? new Date(
-              task.dueDate
-            ).toLocaleDateString()
+          ? new Date(task.dueDate).toLocaleDateString()
           : "N/A",
     },
+
     {
       key: "attachment",
       label: "Attachment",
@@ -257,7 +263,11 @@ function Tasks() {
                       </p>
 
                       <a
-                        href={`${import.meta.env.VITE_API_URL}/uploads/${task.attachment}`}
+                        href={
+                          task.attachment.startsWith("http")
+                            ? task.attachment
+                            : `${import.meta.env.VITE_API_URL}/uploads/${task.attachment}`
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 text-sm font-medium"
@@ -287,9 +297,7 @@ function Tasks() {
                     onClick={() =>
                       handleUpload(task._id)
                     }
-                    disabled={
-                      uploadMutation.isPending
-                    }
+                    disabled={uploadMutation.isPending}
                     className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold px-4 py-2 rounded-lg"
                   >
                     {uploadMutation.isPending

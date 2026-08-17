@@ -178,7 +178,7 @@ const uploadAttachment = async (req, res) => {
       });
     }
 
-    task.attachment = req.file.filename;
+    task.attachment = req.file.path;
     await task.save();
 
     res.status(200).json({

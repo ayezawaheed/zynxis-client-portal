@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+
+// Load environment variables BEFORE loading routes
+dotenv.config();
+
 const path = require("path");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
@@ -9,10 +13,6 @@ const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
-
-
-// Load environment variables
-dotenv.config();
 
 // Connect to MongoDB
 connectDB();
